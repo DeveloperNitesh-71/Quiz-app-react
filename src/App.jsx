@@ -5,6 +5,7 @@ const App = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [clicked, setClicked] = useState(false);
   const [marks, setMarks] = useState(0)
+  const [submit, setSubmit] = useState(false)
 
   let option1 = useRef(null);
   let option2 = useRef(null);
@@ -14,18 +15,28 @@ const App = () => {
   let option_arr = [option1, option2, option3, option4];
 
   const handleNextButtonClick = (e) => {
-    option_arr.forEach((options) => {
-      options.current.classList.remove("bg-red-300");
-      options.current.classList.remove("bg-green-300");
-      options.current.classList.remove("border-red-600");
-      options.current.classList.remove("border-green-600");
-    });
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      e.target.innerText = "submit";
+    if(e.target.innerText != 'Submit'){
+      option_arr.forEach((options) => {
+        options.current.classList.remove("bg-red-300");
+        options.current.classList.remove("bg-green-300");
+        options.current.classList.remove("border-red-600");
+        options.current.classList.remove("border-green-600");
+      });
+      if(currentQuestionIndex == 18) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        e.target.innerText = "Submit";
+      }
+      else if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        console.log(currentQuestionIndex);
+      } 
+      
+      setClicked(false);
+    } 
+    else if (e.target.innerText == "Submit"){
+      setSubmit(true)
+      e.target.innerText = "Next →"
     }
-    setClicked(false);
     
   };
 
@@ -63,12 +74,19 @@ const App = () => {
         });
       }
     }
-  };
+  };  
+
+  const handleRestart = () => {
+    setCurrentQuestionIndex(0)
+    setSubmit(false)    
+    setMarks(0)
+    setClicked(false)
+  }
 
   return (
     <div className="h-screen w-screen flex flex-col gap-4 items-center justify-center">
       <h1 className="text-3xl font-bold">Quiz App</h1>
-      <div className="h-max w-150 border border-gray-400 rounded flex flex-col gap-4 items-start p-4 justify-between">
+      {submit === false ? <div className="h-max w-150 border border-gray-400 rounded flex flex-col gap-4 items-start p-4 justify-between">
         <p className="text-start mt-4 w-full items-center text-xl font-medium">
           {questions[currentQuestionIndex].id}.{" "}
           {questions[currentQuestionIndex].question}
@@ -111,7 +129,10 @@ const App = () => {
             Next →
           </button>
         </div>
-      </div>
+      </div> : <div className="h-max w-150 border border-gray-400 rounded flex flex-col gap-4 items-center p-4 justify-between"> 
+        <p className="text-xl">Your Score: {marks} out of 20</p> 
+        <button className="bg-blue-200 hover:bg-blue-300 text-blue-800 font-bold py-2 px-4 border border-blue-400 rounded" onClick={handleRestart}>Restart</button>
+      </div> }
     </div>
   );
 };
